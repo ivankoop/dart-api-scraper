@@ -1,4 +1,4 @@
-# dart_api_scraper
+# Dart api scraper
 
 A simple api scraper build with dart.
 
@@ -7,7 +7,7 @@ A simple api scraper build with dart.
 dart bin/compiled/compiled.dart
 ```
 
-## create snapshot cmd
+## Create snapshot cmd
 ```
 dart --snapshot=snap_name.dart --snapshot-kind=app-jit main.dart arguments-for-training
 ```
