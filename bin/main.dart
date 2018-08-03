@@ -5,18 +5,45 @@ import 'package:sqljocky/sqljocky.dart';
 import 'package:http/http.dart' as http;
 
 String set_url = "https://servicios.set.gov.py/eset-publico/ciudadano/recuperar?cedula=";
-int id_range = 500;
-ConnectionPool pool = new ConnectionPool(host: "localhost", port: 3306, user: "root", db: "ci_p", max:1);
+int id_range = 600;
+ConnectionPool pool;
+int threads = 15;
+bool use_mysql = false;
 
 main() async {
+
+  if(use_mysql) {
+    pool = new ConnectionPool(host: "localhost", port: 3306, user: "root", db: "ci_paraguay", max:1);
+  }
   
-  for(var i = 1; i < id_range; i++) {
+  if (id_range % threads != 0) {
+    print("threads must be a factor of id_range");
+    return;
+  }
+
+  var max_thread_requests = (id_range / threads).round();
+  var thread_start = 0;
+
+  for(var i = 0; i < id_range; i++) {
+    if(i == thread_start) {
+      thread_start += (max_thread_requests);
+      start_thread(i + 1,(id_range - (id_range - thread_start)));
+    } 
+  }
+}
+
+start_thread(start, end) async {
+
+  for(var i = start; i < end; i++) {
     await http.read(set_url + "$i").then((contents) {
        
         final json = JSON.decode(contents);
         final json_result = json["resultado"];
-        insert_data(json_result);
+        print(json_result);
 
+        if(use_mysql) {
+          insert_data(json_result);
+        }
     });
   }
 }
@@ -25,9 +52,6 @@ insert_data(json_result) async {
 
   try {
     var query = await pool.prepare('insert into personas (cedula, nombres, apellidoPaterno, apellidoMaterno, nombreCompleto) values (?, ?, ?, ?, ?)');
-
-    print(json_result);
-
     await query.execute([
       json_result["cedula"], 
       json_result["nombres"], 
@@ -36,9 +60,9 @@ insert_data(json_result) async {
       json_result["nombreCompleto"],
     ]);
 
-  } catch(e) {
-    print(e.toString());
-  }
+    } catch(e) {
+      print(e.toString());
+    }
   
 }
 
