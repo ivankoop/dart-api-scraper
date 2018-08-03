@@ -1,6 +1,6 @@
 # Dart api scraper
 
-A simple api scraper build with dart.
+A simple multi threaded api scraper build with dart.
 
 ## For better performance run the compiled file 😈
 ```
