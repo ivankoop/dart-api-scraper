@@ -2,8 +2,12 @@
 
 A simple api scraper build with dart.
 
-## command line for better performance 😈
+## For better performance run the compiled file 😈
 ```
-cd bin
-dart --snapshot=main.dart --snapshot-kind=app-jit main.dart arguments-for-training
+dart bin/compiled/compiled.dart
+```
+
+## create snapshot cmd
+```
+dart --snapshot=snap_name.dart --snapshot-kind=app-jit main.dart arguments-for-training
 ```
